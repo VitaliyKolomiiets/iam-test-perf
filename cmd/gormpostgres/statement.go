@@ -21,7 +21,7 @@ func SearchStatementIdsByParams(principles []string, resources []string, actions
 
 func ExistSearchStatementByParams(principles []string, resources []string, actions []string) {
 	var exist bool
-	NewClient().Raw("exists(select s.id from statements s"+
+	NewClient().Raw("select exists(select s.id from statements s"+
 		"  left join actions a on s.id = a.statement_id "+
 		"  left join principles p on s.id = p.statement_id "+
 		"  left join resources r on s.id = r.statement_id "+
@@ -36,7 +36,7 @@ func SearchPrincipleKRNsByParams(principles []string, resources []string, action
 		"  left join actions a on s.id = a.statement_id "+
 		"  left join principles p on s.id = p.statement_id "+
 		"  left join resources r on s.id = r.statement_id "+
-		"where a.action in (?) and r.krn in (?) and p.krn in (?)) ", actions, resources, principles).Scan(&principleKRNs)
+		"where a.action in (?) and r.krn in (?) and p.krn in (?) ", actions, resources, principles).Scan(&principleKRNs)
 
 	fmt.Println("Search applied, result: =" + strconv.Itoa(len(principleKRNs)))
 }
@@ -47,7 +47,7 @@ func SearchResourceKRNsByParams(principles []string, resources []string, actions
 		"  left join actions a on s.id = a.statement_id "+
 		"  left join principles p on s.id = p.statement_id "+
 		"  left join resources r on s.id = r.statement_id "+
-		"where a.action in (?) and r.krn in (?) and p.krn in (?)) ", actions, resources, principles).Scan(&resourceKRNs)
+		"where a.action in (?) and r.krn in (?) and p.krn in (?) ", actions, resources, principles).Scan(&resourceKRNs)
 
 	fmt.Println("Search applied, result: =" + strconv.Itoa(len(resourceKRNs)))
 }
