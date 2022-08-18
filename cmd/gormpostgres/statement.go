@@ -8,9 +8,9 @@ import (
 	"strconv"
 )
 
-func SearchStatementByParams(principles []string, resources []string, actions []string) {
+func SearchStatementIdsByParams(principles []string, resources []string, actions []string) {
 	var statementIds []int
-	NewClient().Raw("select s.id from statements s"+
+	NewClient().Raw("select distinct s.id from statements s"+
 		"  left join actions a on s.id = a.statement_id "+
 		"  left join principles p on s.id = p.statement_id "+
 		"  left join resources r on s.id = r.statement_id "+
@@ -19,16 +19,53 @@ func SearchStatementByParams(principles []string, resources []string, actions []
 	fmt.Printf("Search applied, result len = %s\n", strconv.Itoa(len(statementIds)))
 }
 
-func StatementFilling() {
+func ExistSearchStatementByParams(principles []string, resources []string, actions []string) {
+	var exist bool
+	NewClient().Raw("exists(select s.id from statements s"+
+		"  left join actions a on s.id = a.statement_id "+
+		"  left join principles p on s.id = p.statement_id "+
+		"  left join resources r on s.id = r.statement_id "+
+		"where a.action in (?) and r.krn in (?) and p.krn in (?)) ", actions, resources, principles).Scan(&exist)
+
+	fmt.Println("Search applied, result: =" + strconv.FormatBool(exist))
+}
+
+func SearchPrincipleKRNsByParams(principles []string, resources []string, actions []string) {
+	var principleKRNs []string
+	NewClient().Raw("select distinct p.krn from statements s"+
+		"  left join actions a on s.id = a.statement_id "+
+		"  left join principles p on s.id = p.statement_id "+
+		"  left join resources r on s.id = r.statement_id "+
+		"where a.action in (?) and r.krn in (?) and p.krn in (?)) ", actions, resources, principles).Scan(&principleKRNs)
+
+	fmt.Println("Search applied, result: =" + strconv.Itoa(len(principleKRNs)))
+}
+
+func SearchResourceKRNsByParams(principles []string, resources []string, actions []string) {
+	var resourceKRNs []string
+	NewClient().Raw("select distinct r.krn from statements s"+
+		"  left join actions a on s.id = a.statement_id "+
+		"  left join principles p on s.id = p.statement_id "+
+		"  left join resources r on s.id = r.statement_id "+
+		"where a.action in (?) and r.krn in (?) and p.krn in (?)) ", actions, resources, principles).Scan(&resourceKRNs)
+
+	fmt.Println("Search applied, result: =" + strconv.Itoa(len(resourceKRNs)))
+}
+
+func FillStatement() {
 	client := NewClient()
 
 	for i := 0; i < 100; i++ {
 		var theArrayStatement []*models.Statement
 
-		var tenantName = generateRandomString()
+		serviceName := generateRandomString()
 
 		for j := 0; j < 10000; j++ {
-			theArrayStatement = append(theArrayStatement, buildStatement(tenantName))
+			if j%10 == 0 {
+				theArrayStatement = append(theArrayStatement, buildStatement(serviceName, generateRandomString(), true))
+			} else {
+				theArrayStatement = append(theArrayStatement, buildStatement(serviceName, generateRandomString(), false))
+			}
 		}
 
 		client.CreateInBatches(theArrayStatement, 1000)
@@ -37,28 +74,28 @@ func StatementFilling() {
 	println("Statement filled")
 }
 
-func buildStatement(tenant string) *models.Statement {
-	var theArrayAction = []models.Action{{Action: "endpoint:read"}, {Action: "endpoint:write"}, {Action: "endpoint:delete"}}
+func buildStatement(serviceName string, tenantName string, includeServiceWildcard bool) *models.Statement {
+	var theArrayAction = []models.Action{{Action: "iam:endpoint:read"}, {Action: "iam:endpoint:write"}, {Action: "iam:endpoint:delete"}}
 
 	var theArrayResource []models.Resource
 	for i := 0; i < 10; i++ {
-		if i == 0 {
-			theArrayResource = append(theArrayResource, models.Resource{Krn: "krn:epr:*"})
+		if i == 0 && includeServiceWildcard {
+			theArrayResource = append(theArrayResource, models.Resource{Krn: "krn:" + serviceName + ":*"})
 		} else if i == 1 {
-			theArrayResource = append(theArrayResource, models.Resource{Krn: "krn:epr:" + tenant + "::*"})
+			theArrayResource = append(theArrayResource, models.Resource{Krn: "krn:" + serviceName + ":" + tenantName + "::*"})
 		} else {
-			theArrayResource = append(theArrayResource, models.Resource{Krn: "krn:epr:" + tenant + "::endpoint/" + uuid.New().String()})
+			theArrayResource = append(theArrayResource, models.Resource{Krn: "krn:" + serviceName + ":" + tenantName + "::endpoint/" + uuid.New().String()})
 		}
 	}
 
 	var theArrayPrinciple []models.Principle
 	for i := 0; i < 5; i++ {
-		if i == 0 {
-			theArrayPrinciple = append(theArrayPrinciple, models.Principle{Krn: "krn:iam:*"})
+		if i == 0 && includeServiceWildcard {
+			theArrayPrinciple = append(theArrayPrinciple, models.Principle{Krn: "krn:" + serviceName + ":*"})
 		} else if i == 1 {
-			theArrayPrinciple = append(theArrayPrinciple, models.Principle{Krn: "krn:iam:" + tenant + "::*"})
+			theArrayPrinciple = append(theArrayPrinciple, models.Principle{Krn: "krn:" + serviceName + ":" + tenantName + "::*"})
 		} else {
-			theArrayPrinciple = append(theArrayPrinciple, models.Principle{Krn: "krn:iam:" + tenant + "::user/" + uuid.New().String()})
+			theArrayPrinciple = append(theArrayPrinciple, models.Principle{Krn: "krn:" + serviceName + ":" + tenantName + "::user/" + uuid.New().String()})
 		}
 	}
 
