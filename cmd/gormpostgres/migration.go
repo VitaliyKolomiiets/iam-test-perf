@@ -9,7 +9,7 @@ import (
 )
 
 func StatementMigration() {
-	dsn := "host=localhost user=iam1 password=root1 dbname=iam1 port=5433 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=localhost user=iam1 password=root1 dbname=iam1 port=5433"
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

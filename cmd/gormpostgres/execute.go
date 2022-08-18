@@ -9,7 +9,7 @@ import (
 )
 
 func ExecuteSearch(principles []string, resources []string, actions []string) {
-	dsn := "host=localhost user=iam1 password=root1 dbname=iam1 port=5433 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=localhost user=iam1 password=root1 dbname=iam1 port=5433"
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 	if err != nil {
