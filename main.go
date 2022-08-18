@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	/*pg.MigrateEntity()
-	pg.FillStatement()*/
+	pg.MigrateEntity()
+	pg.FillStatement()
 
 	actions := action.Action("iam:endpoint:read")
 	resourceKRN, _ := krn.NewKRNFromString("krn:xvlbzgbaic:mrajwwhthc::endpoint/6fe3bfae-c0bf-4b9e-82c1-57e84e2776f0")
