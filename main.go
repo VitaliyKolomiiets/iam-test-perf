@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	//pg.StatementMigration()
+	pg.StatementMigration()
 
 	actions := action.Action("iam:user:endpoint:read")
 	resourceKRN, _ := krn.NewKRNFromString("krn:iam:kaa::endpoint/5766b7e9-1f16-443d-8e4a-553f70733aa7")
