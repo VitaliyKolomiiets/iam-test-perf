@@ -3,13 +3,14 @@ package gormpostgres
 import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"iam-test-perf/cmd/models"
 )
 
 func NewClient() *gorm.DB {
 	dsn := "host=localhost user=iam1 password=root1 dbname=iam1 port=5433"
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 	if err != nil {
 		panic("failed to connect database")
 	}
