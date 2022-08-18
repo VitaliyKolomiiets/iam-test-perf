@@ -9,15 +9,16 @@ import (
 )
 
 func main() {
-	pg.StatementMigration()
+	pg.MigrateEntity()
+	pg.StatementFilling()
 
-	actions := action.Action("iam:user:endpoint:read")
+	actions := action.Action("iam:endpoint:read")
 	resourceKRN, _ := krn.NewKRNFromString("krn:iam:kaa::endpoint/5766b7e9-1f16-443d-8e4a-553f70733aa7")
 	principleKRN, _ := krn.NewKRNFromString("krn:iam:kaa::user/vitaliy")
 
 	start := time.Now()
 
-	pg.ExecuteSearch(principleKRN.MatchingKRNs(), resourceKRN.MatchingKRNs(), actions.MatchingActionsString())
+	pg.SearchStatementByParams(principleKRN.MatchingKRNs(), resourceKRN.MatchingKRNs(), actions.MatchingActionsString())
 
 	fmt.Printf("Search took %s", time.Since(start).String())
 }
