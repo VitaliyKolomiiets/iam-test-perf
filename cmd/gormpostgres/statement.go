@@ -41,7 +41,7 @@ func SearchPrincipleKRNsByParams(principles []string, resources []string, action
 	fmt.Println("Search applied, result: =" + strconv.Itoa(len(principleKRNs)))
 }
 
-func SearchResourceKRNsByParams(principles []string, resources []string, actions []string) {
+func SearchResourceKRNsByParams(principles []string, resources []string, actions []string) []string {
 	var resourceKRNs []string
 	NewClient().Raw("select distinct r.krn from statements s"+
 		"  left join actions a on s.id = a.statement_id "+
@@ -50,6 +50,19 @@ func SearchResourceKRNsByParams(principles []string, resources []string, actions
 		"where a.action in (?) and r.krn in (?) and p.krn in (?) ", actions, resources, principles).Scan(&resourceKRNs)
 
 	fmt.Println("Search applied, result: =" + strconv.Itoa(len(resourceKRNs)))
+	return resourceKRNs
+}
+
+func SearchByKRNsByType(w models.ResourceType, KRNs []string) {
+	if w == models.ResourcePayload {
+		var resource []*models.Resource
+		NewClient().Where(`"krn" IN (?)`, KRNs).Find(&resource)
+		fmt.Println(len(resource))
+	} else if w == models.UserPayload {
+		var users []*models.User
+		NewClient().Where(`"krn" IN (?)`, KRNs).Find(&users)
+		fmt.Println(len(users))
+	}
 }
 
 func FillStatement() {

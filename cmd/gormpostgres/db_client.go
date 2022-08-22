@@ -18,7 +18,7 @@ func NewClient() *gorm.DB {
 }
 
 func MigrateEntity() {
-	err := NewClient().AutoMigrate(&models.Statement{}, &models.Principle{}, &models.Action{}, &models.Resource{})
+	err := NewClient().AutoMigrate(&models.Statement{}, &models.Principle{}, &models.Action{}, &models.Resource{}, &models.User{})
 	if err != nil {
 		panic("Error happened during migration")
 	}
