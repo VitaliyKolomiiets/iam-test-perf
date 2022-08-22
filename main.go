@@ -53,7 +53,6 @@ func main() {
 	fmt.Printf("CASE-4: Search took %s\n", time.Since(start).String())
 	/*-----------------------------------------------------------------------------------------------------*/
 	fmt.Println("CASE-5: Retrieve all resources: all requested resources are allowed.")
-	/*Function select krn from resource by matched KRNs, return ??*/
 	actions = action.Action("iam:endpoint:read")
 	resourceKRN, _ = krn.NewKRNFromString("krn:byqvpcufqp:*")
 	principleKRN, _ = krn.NewKRNFromString("krn:byqvpcufqp:rzuhtifbzd::*")
@@ -63,7 +62,6 @@ func main() {
 	fmt.Printf("CASE-5: Search took %s\n", time.Since(start).String())
 	/*-----------------------------------------------------------------------------------------------------*/
 	fmt.Println("CASE-6: Retrieve all resources: all requested resources are allowed.")
-	/*Function select krn from resource by matched KRNs, return ??*/
 	actions = action.Action("iam:endpoint:read")
 	resourceKRN, _ = krn.NewKRNFromString("krn:byqvpcufqp:obdayfnyyh::endpoint/*")
 	principleKRN, _ = krn.NewKRNFromString("krn:byqvpcufqp:*")
@@ -79,5 +77,5 @@ func main() {
 
 	start = time.Now()
 	pg.SearchResourceKRNsByParamsAndGroupedByState(principleKRN.MatchingKRNs(), resourceKRN.MatchingKRNs(), actions.MatchingActionsString())
-	fmt.Printf("CASE-6: Search took %s\n", time.Since(start).String())
+	fmt.Printf("CASE-7: Search took %s\n", time.Since(start).String())
 }
